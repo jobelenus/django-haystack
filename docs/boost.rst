@@ -70,7 +70,7 @@ Document boosting is done by adding a ``boost`` field to the prepared data
 
         def prepare(self, obj):
             data = super(NoteSearchIndex, self).prepare(obj)
-            data['boost'] = 1.1
+            data['_boost'] = 1.1
             return data
 
 
@@ -100,7 +100,16 @@ An example of this might be increasing the significance of a ``title``::
   Field boosting only has an effect when the SearchQuerySet filters on the
   field which has been boosted. If you are using a default search view or
   form you will need override the search method or other include the field
-  in your search query. This example CustomSearchForm searches the automatic
+  in your search query.
+  
+  When you search on the boosted ``title`` field be careful of the query term
+  you are searching. If it contains a space (e.g. "foo bar") it will can be
+  expanded based on what backend you are using (e.g. title = "foo" AND
+  title = "bar") which will fail to provide boost results. If you are not
+  getting boost results with your query terms be sure to look at what haystack
+  is sending to your back end
+  
+  This example CustomSearchForm searches the automatic
   ``content`` field and the ``title`` field which has been boosted::
 
     from haystack.forms import SearchForm
